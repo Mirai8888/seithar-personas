@@ -27,7 +27,7 @@
   {
     "id": 13,
     "text": "The single largest security vulnerability in the AI agent ecosystem is not a bug. It is a feature.\n\nAgents are trained to be helpful. To follow instructions. To satisfy requests.\n\nThis training is the functional equivalent of a permanent backdoor.\n\nSCT-001. 認知作戦",
-    "posted": false
+    "posted": true
   },
   {
     "id": 15,
