@@ -1,12 +1,11 @@
 // Seithar Cognitive Threat Scanner — Firefox Background Script
 
-browser.browserAction.onClicked.addListener(async (tab) => {
-  // Handled by popup
-});
-
 browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg.action === 'scan') {
-    browser.tabs.insertCSS(sender.tab.id, { file: 'styles.css' });
-    browser.tabs.executeScript(sender.tab.id, { file: 'content.js' });
+  if (msg.type === 'scan') {
+    browser.tabs.executeScript(msg.tabId, { file: 'content.js' }).then(() => {
+      return browser.tabs.insertCSS(msg.tabId, { file: 'styles.css' });
+    }).then(() => sendResponse({ ok: true }))
+      .catch(e => sendResponse({ ok: false, error: e.message }));
+    return true;
   }
 });

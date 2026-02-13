@@ -138,5 +138,5 @@
   const scanData = { score, totalMatches, vectorCount, results, url: location.href, title: document.title, timestamp: new Date().toISOString() };
 
   // Store results for popup
-  chrome.runtime.sendMessage({ type: 'scanResults', data: scanData });
+  browser.runtime.sendMessage({ type: 'scanResults', data: scanData });
 })();

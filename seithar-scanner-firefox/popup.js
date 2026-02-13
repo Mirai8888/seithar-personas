@@ -7,7 +7,8 @@ document.getElementById('scan-btn').addEventListener('click', async () => {
   statusEl.classList.remove('hidden');
   resultsEl.classList.add('hidden');
 
-  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+  const tab = tabs[0];
   if (!tab?.id) { statusEl.textContent = 'NO ACTIVE TAB'; return; }
 
   try {
