@@ -191,8 +191,30 @@ class PersonaBot(discord.Client):
 
     async def on_ready(self):
         guilds = [g.name for g in self.guilds]
-        print(f"[{self.name}] online as {self.user} ({self.user.id})")
-        print(f"[{self.name}] in {len(guilds)} servers: {', '.join(guilds)}")
+        print(f"[{self.name}] online as {self.user} ({self.user.id})", flush=True)
+        print(f"[{self.name}] in {len(guilds)} servers: {', '.join(guilds)}", flush=True)
+
+        # Auto-join servers from invite list
+        invites = self.config.get("invites", [])
+        for invite_url in invites:
+            code = invite_url.split("/")[-1]
+            guild_ids = [str(g.id) for g in self.guilds]
+            try:
+                import requests as req
+                headers = {"Authorization": self.config["_token"], "User-Agent": "Mozilla/5.0"}
+                # Check invite info first
+                info = req.get(f"https://discord.com/api/v10/invites/{code}", headers=headers).json()
+                guild_id = info.get("guild", {}).get("id", "")
+                if guild_id in guild_ids:
+                    continue  # already in this server
+                # Try to join
+                r = req.post(f"https://discord.com/api/v10/invites/{code}", headers=headers, json={})
+                if r.status_code == 200:
+                    print(f"[{self.name}] joined {info.get('guild',{}).get('name','unknown')} via invite", flush=True)
+                else:
+                    print(f"[{self.name}] failed to join {code}: {r.status_code}", flush=True)
+            except Exception as e:
+                print(f"[{self.name}] invite join error: {e}", flush=True)
 
     async def on_message(self, message):
         # Track own messages

@@ -65,6 +65,7 @@ then edit `persona.json`:
 - change `"token_file"` to point at the credentials file
 - write the `"system_prompt"` describing personality
 - adjust `"reactions"`, `"interest_keywords"`, timing values
+- add `"invites": ["https://discord.gg/INVITE1", "https://discord.gg/INVITE2"]` to auto-join servers on startup
 
 ### 3. set up the discord profile
 
