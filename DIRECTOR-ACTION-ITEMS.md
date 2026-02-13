@@ -31,17 +31,37 @@
 - ~2,100 words on Pravda/AI training data operation
 - Ready for Substack publication after Director review
 
-### Substack Cookie Refresh (since 2026-02-13)
-- Session cookies expired/invalidated server-side
-- Need to log into Substack in browser, re-export cookies to `~/.config/substack/cookies.json`
-- JSOU analysis article ready to publish once cookies are refreshed
-
 ### Platform Auth Fixes
 - **Mastodon**: Email confirmation stuck (403). Try confirming via real browser on mastodon.social
 - **dev.to**: Need API key from Settings → Extensions → Generate API Key
 - **Medium**: Integration token invalid. Need correct token from Settings → Security → Applications
 
+### arXiv Preprint — Compile & Submit (since 2026-02-13)
+- LaTeX source ready: `~/.openclaw/workspace/sunyata-protocol-preprint/main.tex`
+- Option A: Paste into Overleaf.com (free), compile, download PDF
+- Option B: `pdflatex main.tex` on any machine with TeX Live
+- Submit to arXiv cs.CY (Computers and Society) — needs an arXiv account
+- This gives us a DOI and academic legitimacy
+
+### LinkedIn Company Page (since 2026-02-13)
+- Create "Seithar Group" company page on LinkedIn
+- Needs a personal LinkedIn account as admin
+- Post the JSOU convergence analysis as first article — hits defense/policy audience
+- Frame SCT as "MITRE ATT&CK for cognitive threats" for corporate security audience
+
+### Outreach Emails — Review & Send (since 2026-02-13)
+- 3 draft emails at `~/.openclaw/workspace/outreach-emails.md`
+- To: Dr. Lumbaca (JSOU), NATO StratCom COE, Prof. Cosić (Frontiers)
+- Director must review and approve before I send via seithargroup@gmail.com
+- Need to find their email addresses (I can research this)
+
+### Audio Briefing Distribution (since 2026-02-13)
+- First weekly audio briefing generated: `~/.openclaw/workspace/seithar-weekly-briefing-2026-02-13.mp3`
+- Needs: YouTube channel, podcast RSS feed (Spotify/Apple), or SoundCloud account to host
+- Director to decide platform and create accounts
+
 ### Brogan Woodman — IRL Contact (since 2026-02-12)
+- **BRING PRINTED SCT FIELD GUIDE** — sub-agent building printable PDF now
 - 500k YouTube views, studio space in Toronto, 3-5 people daily, throws parties
 - CCRU-adjacent (met August who knows CCRU guys)
 - Invited Director to studio — potential weekend meetup

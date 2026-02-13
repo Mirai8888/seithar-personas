@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 380px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 300;
+  color: #111;
+  background: #fff;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header img { width: 24px; height: 24px; }
+.header h1 {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #111;
+}
+.score-section {
+  padding: 24px 20px;
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+.score-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 8px;
+}
+.score-value {
+  font-size: 48px;
+  font-weight: 200;
+  letter-spacing: -1px;
+}
+.score-value.low { color: #22c55e; }
+.score-value.medium { color: #f59e0b; }
+.score-value.high { color: #f97316; }
+.score-value.critical { color: #ef4444; }
+.meta {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 12px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #888;
+}
+.meta span strong { font-weight: 500; color: #111; }
+#vectors {
+  padding: 12px 20px;
+  max-height: 280px;
+  overflow-y: auto;
+  border-bottom: 1px solid #e5e5e5;
+}
+.vector {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.vector:last-child { border-bottom: none; }
+.vector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.vector-code {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+.vector-name {
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.vector-count {
+  font-size: 10px;
+  color: #888;
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+.sev-medium .vector-code { color: #f59e0b; }
+.sev-high .vector-code { color: #f97316; }
+.sev-critical .vector-code { color: #ef4444; }
+.vector-example {
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.actions {
+  padding: 12px 20px;
+  display: flex;
+  gap: 8px;
+}
+button {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #111;
+  border-radius: 2px;
+  transition: all 0.15s;
+}
+button:hover { background: #111; color: #fff; }
+button#scan-btn { background: #111; color: #fff; }
+button#scan-btn:hover { background: #333; }
+.footer {
+  padding: 10px 20px;
+  border-top: 1px solid #e5e5e5;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #bbb;
+  text-align: center;
+}
+.footer a { color: #999; text-decoration: none; }
+.footer a:hover { color: #111; }
+#status {
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.hidden { display: none; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon48.png" alt="">
+    <h1>Seithar Cognitive Threat Scanner</h1>
+  </div>
+
+  <div id="status">
+    <p>Click scan to analyze current page</p>
+  </div>
+
+  <div id="results" class="hidden">
+    <div class="score-section">
+      <div class="score-label">Threat Score</div>
+      <div class="score-value" id="score">0</div>
+      <div class="meta">
+        <span>Vectors: <strong id="vector-count">0</strong></span>
+        <span>Matches: <strong id="match-count">0</strong></span>
+      </div>
+    </div>
+    <div id="vectors"></div>
+  </div>
+
+  <div class="actions">
+    <button id="scan-btn">Scan Page</button>
+    <button id="share-btn">Share Analysis</button>
+  </div>
+
+  <div class="footer">
+    <a href="https://seithar.com" target="_blank">seithar.com</a> · 
+    <a href="https://github.com/Mirai8888/seithar-cogdef" target="_blank">github</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

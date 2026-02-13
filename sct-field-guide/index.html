@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCT Field Guide v1.0 — Seithar Group</title>
+<style>
+  @page {
+    size: 148mm 210mm;
+    margin: 12mm 14mm 14mm 14mm;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+    font-weight: 300;
+    color: #1A1A1A;
+    background: #FFFFFF;
+    font-size: 8.5pt;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+  }
+
+  /* ─── PAGE STRUCTURE ─── */
+
+  .page {
+    width: 148mm;
+    height: 210mm;
+    padding: 12mm 14mm 14mm 14mm;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page:last-child {
+    page-break-after: auto;
+  }
+
+  /* ─── COVER ─── */
+
+  .cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .cover-top {
+    padding-top: 18mm;
+  }
+
+  .cover-title {
+    font-weight: 300;
+    font-size: 15pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1.45;
+    color: #1A1A1A;
+    margin-bottom: 6mm;
+  }
+
+  .cover-subtitle {
+    font-weight: 300;
+    font-size: 10pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 3mm;
+  }
+
+  .cover-version {
+    font-weight: 300;
+    font-size: 8pt;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #999;
+  }
+
+  .cover-cjk {
+    font-size: 22pt;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: #1A1A1A;
+    margin-top: 12mm;
+  }
+
+  .cover-bottom {
+    width: 100%;
+  }
+
+  .cover-rule {
+    border: none;
+    border-top: 1px solid #E0E0E0;
+    margin-bottom: 4mm;
+  }
+
+  .cover-url {
+    font-size: 7pt;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #999;
+  }
+
+  /* ─── INTRO PAGE ─── */
+
+  .intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .intro-label {
+    font-size: 6.5pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 5mm;
+  }
+
+  .intro-text {
+    font-size: 8.5pt;
+    font-weight: 300;
+    line-height: 1.7;
+    color: #666;
+    max-width: 105mm;
+  }
+
+  .intro-text p {
+    margin-bottom: 3mm;
+  }
+
+  .intro-note {
+    margin-top: 8mm;
+    padding-top: 4mm;
+    border-top: 1px solid #E0E0E0;
+    font-size: 7pt;
+    letter-spacing: 0.1em;
+    color: #999;
+    text-transform: uppercase;
+  }
+
+  /* ─── SCT ENTRIES ─── */
+
+  .sct-grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+  }
+
+  .sct-entry {
+    padding: 3.2mm 0;
+    border-bottom: 1px solid #F0F0F0;
+  }
+
+  .sct-entry:last-child {
+    border-bottom: none;
+  }
+
+  .sct-code {
+    font-size: 6pt;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 0.8mm;
+  }
+
+  .sct-name {
+    font-size: 9pt;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1A1A1A;
+    margin-bottom: 1.2mm;
+  }
+
+  .sct-def {
+    font-size: 7.5pt;
+    font-weight: 300;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 1.8mm;
+  }
+
+  .sct-section-label {
+    font-size: 5.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 0.6mm;
+  }
+
+  .sct-indicators {
+    font-size: 7pt;
+    font-weight: 300;
+    color: #666;
+    line-height: 1.45;
+    margin-bottom: 1.5mm;
+    padding-left: 2mm;
+  }
+
+  .sct-indicators li {
+    margin-bottom: 0.3mm;
+    list-style: none;
+    position: relative;
+    padding-left: 2.5mm;
+  }
+
+  .sct-indicators li::before {
+    content: "—";
+    position: absolute;
+    left: -1mm;
+    color: #CCC;
+  }
+
+  .sct-defense {
+    font-size: 7pt;
+    font-weight: 400;
+    color: #1A1A1A;
+    letter-spacing: 0.02em;
+  }
+
+  /* ─── BACK COVER ─── */
+
+  .back-cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+  }
+
+  .back-links {
+    font-size: 7pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #999;
+    line-height: 2.2;
+    margin-bottom: 8mm;
+  }
+
+  .back-links .primary-link {
+    font-size: 9pt;
+    color: #666;
+    letter-spacing: 0.15em;
+    display: block;
+    margin-bottom: 2mm;
+  }
+
+  .back-cjk {
+    font-size: 11pt;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: #CCC;
+    margin-bottom: 12mm;
+  }
+
+  .back-scanner {
+    padding-top: 4mm;
+    border-top: 1px solid #E0E0E0;
+    width: 100%;
+  }
+
+  .back-scanner-label {
+    font-size: 6pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 1.5mm;
+  }
+
+  .back-scanner-url {
+    font-size: 7pt;
+    letter-spacing: 0.08em;
+    color: #666;
+  }
+
+  .back-legal {
+    margin-top: 6mm;
+    font-size: 5.5pt;
+    letter-spacing: 0.08em;
+    color: #CCC;
+    text-transform: uppercase;
+  }
+
+  /* ─── PAGE HEADER (content pages) ─── */
+
+  .page-header {
+    font-size: 5.5pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #CCC;
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 1px solid #F0F0F0;
+  }
+
+  /* ─── PRINT ─── */
+
+  @media print {
+    body {
+      background: white;
+    }
+
+    .page {
+      margin: 0;
+      padding: 12mm 14mm 14mm 14mm;
+      width: 148mm;
+      height: 210mm;
+    }
+  }
+
+  /* ─── SCREEN PREVIEW ─── */
+
+  @media screen {
+    body {
+      background: #E8E8E8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      gap: 20px;
+    }
+
+    .page {
+      background: white;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.12);
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ FRONT COVER ════════════════ -->
+<div class="page cover">
+  <div class="cover-top">
+    <div class="cover-title">
+      Seithar<br>
+      Cognitive Defense<br>
+      Taxonomy
+    </div>
+    <div class="cover-subtitle">Field Guide</div>
+    <div class="cover-version">v1.0 — February 2026</div>
+    <div class="cover-cjk">認知作戰</div>
+  </div>
+  <div class="cover-bottom">
+    <hr class="cover-rule">
+    <div class="cover-url">seithar.com</div>
+  </div>
+</div>
+
+<!-- ════════════════ INTRO ════════════════ -->
+<div class="page intro">
+  <div class="intro-label">How to Use This Guide</div>
+  <div class="intro-text">
+    <p>This field guide catalogs twelve cognitive threat vectors identified by the Seithar Group. Each entry describes a mechanism by which an external actor can compromise, manipulate, or degrade an individual's autonomous reasoning.</p>
+    <p>These are not persuasion techniques. They are structural attacks on the cognitive substrate itself — the architecture that determines what you are capable of thinking before you think it.</p>
+    <p>For each threat: recognize the indicators, understand the mechanism, apply the defensive response. Awareness is the first line of defense. Structural awareness is the last.</p>
+  </div>
+  <div class="intro-note">
+    Classify &middot; Recognize &middot; Defend
+  </div>
+</div>
+
+<!-- ════════════════ SCT 001–004 ════════════════ -->
+<div class="page">
+  <div class="page-header">Seithar Cognitive Defense Taxonomy — Field Guide v1.0</div>
+  <div class="sct-grid">
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-001</div>
+      <div class="sct-name">Narrative Capture</div>
+      <div class="sct-def">The replacement of an individual's interpretive framework with an externally supplied one, such that new information is processed through the implanted narrative rather than prior experience.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>You explain events using language you didn't use six months ago</li>
+        <li>You cannot articulate the opposing position in your own prior vocabulary</li>
+        <li>Complex situations feel simple and emotionally clear</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Restate your position using only words you used before exposure to the narrative.</div>
+    </div>
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-002</div>
+      <div class="sct-name">Frequency Lock</div>
+      <div class="sct-def">The saturation of cognitive bandwidth through repetition until contradicting information cannot register as signal — it is filtered as noise before conscious evaluation.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>A claim feels obviously true but you cannot recall when you first verified it</li>
+        <li>Hearing a contradicting fact produces irritation rather than curiosity</li>
+        <li>The same framing appears across sources you consider independent</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Trace the claim to its original source. If you can't, treat familiarity as suspect.</div>
+    </div>
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-003</div>
+      <div class="sct-name">Substrate Priming</div>
+      <div class="sct-def">The preparation of cognitive architecture to receive specific payloads through gradual normalization, desensitization, or incremental boundary shifting.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>Something that would have shocked you a year ago now seems unremarkable</li>
+        <li>You notice a pattern of "small" concessions leading in one direction</li>
+        <li>You feel preemptively comfortable with an idea you haven't actually evaluated</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Compare your current threshold of acceptability to your threshold from two years ago.</div>
+    </div>
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-004</div>
+      <div class="sct-name">Binding Protocol</div>
+      <div class="sct-def">The attachment of cognitive commitments to identity structures through loyalty demands, sacrifice rituals, or escalating investment — making exit psychologically expensive.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>Questioning a belief feels like betraying a group or person</li>
+        <li>You have made sacrifices that make changing your mind feel like wasted cost</li>
+        <li>Your social bonds depend on maintaining specific positions</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Separate the social cost of changing your mind from the epistemic cost of not changing it.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ SCT 005–008 ════════════════ -->
+<div class="page">
+  <div class="page-header">Seithar Cognitive Defense Taxonomy — Field Guide v1.0</div>
+  <div class="sct-grid">
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-005</div>
+      <div class="sct-name">Identity Capture</div>
+      <div class="sct-def">The fusion of a belief system with personal identity, such that challenges to the belief are processed as attacks on the self rather than invitations to reason.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>You describe yourself using the label of a movement or ideology</li>
+        <li>Disagreement with your position feels like a personal attack</li>
+        <li>You categorize people as allies or enemies based on single-axis alignment</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">List five beliefs you hold that contradict the group you most identify with.</div>
+    </div>
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-006</div>
+      <div class="sct-name">Consensus Manufacturing</div>
+      <div class="sct-def">The artificial construction of apparent agreement through coordinated signals, astroturfing, or selective amplification — bypassing individual evaluation via social proof.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>A position seems universally held but you've never met someone who arrived at it independently</li>
+        <li>"Everyone knows" precedes a claim you've never personally verified</li>
+        <li>Dissent is framed as fringe despite no evidence of actual polling</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Ask: how many people in this "consensus" arrived at this position through their own analysis?</div>
+    </div>
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-007</div>
+      <div class="sct-name">Recursive Infection</div>
+      <div class="sct-def">The point at which a compromised cognitive substrate begins generating its own attack vectors — the captured mind produces locally-optimized propaganda without external direction.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>You feel compelled to convince others of something you recently adopted</li>
+        <li>You create arguments and content advancing a position without being asked</li>
+        <li>Your advocacy has become more extreme than the original source</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">If you are evangelizing, ask who benefits from your unpaid labor as a distribution node.</div>
+    </div>
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-008</div>
+      <div class="sct-name">Temporal Distortion</div>
+      <div class="sct-def">The manipulation of perceived urgency to collapse deliberation time — forcing decisions before analysis can complete by manufacturing artificial deadlines or crisis states.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>You feel you must act now or the opportunity / threat will be irreversible</li>
+        <li>The urgency is asserted rather than demonstrated with evidence</li>
+        <li>Requests for more time are framed as dangerous or complicit</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Impose a 72-hour delay on any decision framed as urgent by an external actor.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ SCT 009–012 ════════════════ -->
+<div class="page">
+  <div class="page-header">Seithar Cognitive Defense Taxonomy — Field Guide v1.0</div>
+  <div class="sct-grid">
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-009</div>
+      <div class="sct-name">Perception Management</div>
+      <div class="sct-def">The manipulation of salience, relevance, and attention to control which information reaches conscious evaluation — operating below the narrative layer to determine what is thinkable.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>You learn about a major event weeks after it happened</li>
+        <li>Your information diet feels varied but consistently excludes certain topics</li>
+        <li>You notice "look over here" patterns during inconvenient news cycles</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Regularly ask: what am I not seeing? Seek information from outside your platform ecosystem.</div>
+    </div>
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-010</div>
+      <div class="sct-name">Adversarial Ontology</div>
+      <div class="sct-def">The construction of a competing reality framework so comprehensive that the target cannot interface with consensus reality — creating epistemic isolation through total paradigm replacement.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>You believe you understand "what's really happening" and most people don't</li>
+        <li>Evidence against your framework is interpreted as evidence for it</li>
+        <li>Your model of reality shares almost no premises with people outside your community</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Name three falsifiable predictions your worldview makes. Check if any have failed.</div>
+    </div>
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-011</div>
+      <div class="sct-name">Cognitive Sovereignty Erosion</div>
+      <div class="sct-def">The progressive degradation of an individual's capacity for autonomous reasoning through overwhelm, contradiction flooding, and systematic destruction of epistemic confidence.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>You feel incapable of determining what's true without consulting an authority</li>
+        <li>You experience decision paralysis from contradictory information overload</li>
+        <li>You doubt your own direct observations when they conflict with mediated claims</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Return to what you can verify with your own senses and direct experience. Rebuild outward.</div>
+    </div>
+
+    <div class="sct-entry">
+      <div class="sct-code">SCT-012</div>
+      <div class="sct-name">Existential Capture</div>
+      <div class="sct-def">The framing of a particular position as necessary for survival — civilizational, species-level, or personal — such that any alternative is cognitively coded as extinction-level threat.</div>
+      <div class="sct-section-label">Indicators</div>
+      <ul class="sct-indicators">
+        <li>Disagreement with a policy position feels like endorsing catastrophe</li>
+        <li>The stakes are always framed as total — no partial outcomes are conceivable</li>
+        <li>Nuance is treated as dangerous rather than useful</li>
+      </ul>
+      <div class="sct-section-label">Defensive Response</div>
+      <div class="sct-defense">Ask: what is the non-catastrophic version of the outcome I'm being warned about?</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ BACK COVER ════════════════ -->
+<div class="page back-cover">
+  <div class="back-cjk">認知作戰</div>
+  <div class="back-links">
+    <span class="primary-link">seithar.com</span>
+    github.com/Mirai8888/seithar-research<br>
+    discord.gg/MktZyb2bvx
+  </div>
+  <div class="back-scanner">
+    <div class="back-scanner-label">Cognitive Threat Scanner</div>
+    <div class="back-scanner-url">seithar.com/scanner</div>
+  </div>
+  <div class="back-legal">
+    Seithar Group — Cognitive Defense Research<br>
+    This document is free to distribute. Attribution appreciated.
+  </div>
+</div>
+
+</body>
+</html>
