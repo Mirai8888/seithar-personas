@@ -16,6 +16,11 @@ case "${1:-status}" in
         pkill -f "engine.py --persona" 2>/dev/null
         echo "All personas stopped."
         ;;
+    stopone)
+        name="$2"
+        pkill -f "engine.py --persona $name" 2>/dev/null
+        echo "[$name] stopped."
+        ;;
     status)
         echo "Running personas:"
         pgrep -af "engine.py --persona" || echo "  (none)"
@@ -36,7 +41,7 @@ case "${1:-status}" in
     *)
         name="$1"
         if [ -f "$PERSONAS_DIR/$name/persona.json" ]; then
-            pkill -f "engine.py --persona $name" 2>/dev/null
+            pkill -f "engine.py --persona $name\b" 2>/dev/null
             sleep 0.5
             nohup python3 "$ENGINE" --persona "$name" > "$LOG_DIR/$name.log" 2>&1 &
             echo "[$name] launched (PID: $!)"
