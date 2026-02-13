@@ -148,12 +148,49 @@ class PersonaBot(discord.Client):
         self.config = config
         self.name = config["name"]
         self.behavior = config["behavior"]
-        self.channels = config["channels"]
+        # Support both old "channels" format and new "guilds" format
+        if "guilds" in config:
+            self.guilds_config = config["guilds"]
+            self.channels = None
+        else:
+            self.guilds_config = None
+            self.channels = config.get("channels", {"active": [], "lurk": [], "ignore": []})
         self.last_response_time = 0
         self.channel_history = {}
 
+    def _get_channel_config(self, guild_id, channel_name):
+        """Get channel role (active/lurk/ignore/unknown) for a given guild+channel."""
+        if self.guilds_config:
+            gid = str(guild_id)
+            # Check specific guild first, then wildcard
+            guild_cfg = self.guilds_config.get(gid, self.guilds_config.get("*", None))
+            if guild_cfg is None:
+                return "unknown"
+            if channel_name in guild_cfg.get("ignore", []):
+                return "ignore"
+            if channel_name in guild_cfg.get("lurk", []):
+                return "lurk"
+            if channel_name in guild_cfg.get("active", []):
+                return "active"
+            # Wildcard guild: if channel not listed anywhere, treat as lurk
+            # Specific guild: if channel not listed, ignore
+            if gid == "*" or gid not in self.guilds_config:
+                return "lurk"
+            return "unknown"
+        else:
+            # Legacy single-guild format
+            if channel_name in self.channels.get("ignore", []):
+                return "ignore"
+            if channel_name in self.channels.get("lurk", []):
+                return "lurk"
+            if channel_name in self.channels.get("active", []):
+                return "active"
+            return "unknown"
+
     async def on_ready(self):
+        guilds = [g.name for g in self.guilds]
         print(f"[{self.name}] online as {self.user} ({self.user.id})")
+        print(f"[{self.name}] in {len(guilds)} servers: {', '.join(guilds)}")
 
     async def on_message(self, message):
         # Track own messages
@@ -161,26 +198,30 @@ class PersonaBot(discord.Client):
             self._track(message, is_self=True)
             return
 
-        # Only our guild
-        if not message.guild or message.guild.id != GUILD_ID:
+        # Only guild messages
+        if not message.guild:
+            return
+
+        # Legacy: skip non-target guild if using old format
+        if self.channels and message.guild.id != GUILD_ID:
             return
 
         ch = message.channel.name
         self._track(message, is_self=False)
 
-        # Ignore channels
-        if ch in self.channels.get("ignore", []):
+        role = self._get_channel_config(message.guild.id, ch)
+
+        # Ignore
+        if role == "ignore" or role == "unknown":
             return
 
-        # Lurk channels: react only
-        if ch in self.channels.get("lurk", []):
+        # Lurk: react only
+        if role == "lurk":
             if random.random() < self.behavior.get("react_probability", 0.1):
                 await self._react(message)
             return
 
-        # Active channels
-        if ch not in self.channels.get("active", []):
-            return
+        # Active channel
 
         # Maybe react (independent of responding)
         if random.random() < self.behavior.get("react_probability", 0.1):
