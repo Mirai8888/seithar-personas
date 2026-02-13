@@ -31,6 +31,11 @@
 - ~2,100 words on Pravda/AI training data operation
 - Ready for Substack publication after Director review
 
+### Substack Cookie Refresh (since 2026-02-13)
+- Session cookies expired/invalidated server-side
+- Need to log into Substack in browser, re-export cookies to `~/.config/substack/cookies.json`
+- JSOU analysis article ready to publish once cookies are refreshed
+
 ### Platform Auth Fixes
 - **Mastodon**: Email confirmation stuck (403). Try confirming via real browser on mastodon.social
 - **dev.to**: Need API key from Settings → Extensions → Generate API Key
