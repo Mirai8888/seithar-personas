@@ -1,0 +1,13 @@
+{
+  "llm": {
+    "api_base": "http://localhost:8000/v1",
+    "model": "mistralai/Mistral-7B-Instruct-v0.2",
+    "api_key": "not-needed"
+  },
+  "notes": {
+    "discord": "Each persona needs their own Discord user token (not bot token). Create accounts with unique emails.",
+    "twitter": "Each persona needs cookies from an authenticated browser session. Phone verification required per account.",
+    "moltbook": "Register via API: POST /api/v1/register. Each needs unique email.",
+    "telegram": "Each persona that needs Telegram gets a bot token from @BotFather."
+  }
+}

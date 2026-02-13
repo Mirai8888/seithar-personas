@@ -1,0 +1,17 @@
+# Credentials
+*.credentials
+credentials.json
+secrets/
+.env
+
+# Persona instances with real configs
+personas/*/persona.json
+
+# Logs
+*.log
+/tmp/
+
+# Python
+__pycache__/
+*.pyc
+.venv/

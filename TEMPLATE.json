@@ -1,0 +1,31 @@
+{
+  "name": "PERSONA_NAME",
+  "token_file": "~/.config/personas/ACCOUNT_FILE.json",
+  "token_key": "token",
+
+  "channels": {
+    "active": ["residue"],
+    "lurk": ["directives", "subject-data"],
+    "ignore": ["intern"]
+  },
+
+  "behavior": {
+    "react_probability": 0.10,
+    "unprompted_probability": 0.02,
+    "cooldown_seconds": 180,
+    "min_delay": 2.0,
+    "max_delay": 8.0,
+    "min_typing": 1.5,
+    "max_typing": 6.0,
+    "max_response_length": 150,
+    "reply_probability": 0.5,
+    "reactions": ["👍", "🔥", "💀", "🤔"],
+    "interest_keywords": ["seithar", "cognitive", "substrate"]
+  },
+
+  "voice": {
+    "model": "llama-3.3-70b-versatile",
+    "temperature": 0.9,
+    "system_prompt": "REPLACE WITH PERSONA SYSTEM PROMPT"
+  }
+}
