@@ -172,11 +172,13 @@ class PersonaBot(discord.Client):
                 return "lurk"
             if channel_name in guild_cfg.get("active", []):
                 return "active"
-            # Wildcard guild: if channel not listed anywhere, treat as lurk
-            # Specific guild: if channel not listed, ignore
-            if gid == "*" or gid not in self.guilds_config:
-                return "lurk"
-            return "unknown"
+            # Wildcard guild: unlisted channels default to active
+            # (she should participate in any server she's added to)
+            # Specific guild: unlisted channels default to lurk
+            if gid not in self.guilds_config:
+                # Using wildcard config, unlisted channel = active
+                return "active"
+            return "lurk"
         else:
             # Legacy single-guild format
             if channel_name in self.channels.get("ignore", []):
@@ -284,13 +286,19 @@ class PersonaBot(discord.Client):
     def _should_respond(self, message):
         content = message.content.lower()
 
-        # Direct mention
+        # Direct mention - always respond
         if self.user.mentioned_in(message):
             return True
 
         # Name mentioned
         if self.name.lower() in content.split():
             return True
+
+        # Reply to rin's message - always respond
+        if message.reference and message.reference.resolved:
+            if hasattr(message.reference.resolved, 'author'):
+                if message.reference.resolved.author == self.user:
+                    return True
 
         # Interest keywords
         keywords = self.behavior.get("interest_keywords", [])
@@ -299,8 +307,24 @@ class PersonaBot(discord.Client):
             if random.random() < prob:
                 return True
 
-        # Random
-        if random.random() < self.behavior.get("unprompted_probability", 0.03):
+        # Higher engagement in external servers (not home guild)
+        is_home = message.guild and message.guild.id == GUILD_ID
+        base_prob = self.behavior.get("unprompted_probability", 0.03)
+        if not is_home:
+            base_prob *= 2.5  # more active in external servers to build presence
+
+        # Respond to questions more often
+        if "?" in content:
+            base_prob *= 2
+
+        # Respond in active conversations (multiple recent messages)
+        ctx = self.channel_history.get(message.channel.id, [])
+        if len(ctx) >= 5:
+            recent = [m for m in ctx[-5:] if time.time() - m["timestamp"] < 120]
+            if len(recent) >= 3:
+                base_prob *= 1.5  # active conversation boost
+
+        if random.random() < base_prob:
             return True
 
         return False
