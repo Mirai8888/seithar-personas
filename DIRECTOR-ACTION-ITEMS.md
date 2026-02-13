@@ -36,18 +36,17 @@
 - **dev.to**: Need API key from Settings → Extensions → Generate API Key
 - **Medium**: Integration token invalid. Need correct token from Settings → Security → Applications
 
-### arXiv Preprint — Compile & Submit (since 2026-02-13)
-- LaTeX source ready: `~/.openclaw/workspace/sunyata-protocol-preprint/main.tex`
-- Option A: Paste into Overleaf.com (free), compile, download PDF
-- Option B: `pdflatex main.tex` on any machine with TeX Live
+### arXiv Preprint — Submit (since 2026-02-13)
+- PDF compiled and sent to Discord ✅
 - Submit to arXiv cs.CY (Computers and Society) — needs an arXiv account
+- Source + PDF at `~/.openclaw/workspace/sunyata-protocol-preprint/`
 - This gives us a DOI and academic legitimacy
 
-### LinkedIn Company Page (since 2026-02-13)
-- Create "Seithar Group" company page on LinkedIn
-- Needs a personal LinkedIn account as admin
-- Post the JSOU convergence analysis as first article — hits defense/policy audience
-- Frame SCT as "MITRE ATT&CK for cognitive threats" for corporate security audience
+### LinkedIn — Manual Post + Profile Setup (since 2026-02-13)
+- Account exists: linkedin.com/in/seithar-group (cookies saved at ~/.config/linkedin/)
+- Headless browser blocked (redirect loops) — must post manually
+- First post content sent to Discord (copy-paste ready)
+- Update profile: headline, about section, website (details in Discord msg)
 
 ### Outreach Emails — Review & Send (since 2026-02-13)
 - 3 draft emails at `~/.openclaw/workspace/outreach-emails.md`

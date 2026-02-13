@@ -1,0 +1,26 @@
+.sct-highlight {
+  position: relative;
+  cursor: help;
+  border-radius: 1px;
+}
+.sct-medium {
+  text-decoration: underline;
+  text-decoration-color: #f59e0b;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+  background: rgba(245, 158, 11, 0.08);
+}
+.sct-high {
+  text-decoration: underline;
+  text-decoration-color: #f97316;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+  background: rgba(249, 115, 22, 0.1);
+}
+.sct-critical {
+  text-decoration: underline;
+  text-decoration-color: #ef4444;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+  background: rgba(239, 68, 68, 0.1);
+}
