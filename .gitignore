@@ -1,17 +1,19 @@
-# Credentials
+# Credentials - NEVER commit these
 *.credentials
 credentials.json
 secrets/
 .env
+.env.*
 
-# Persona instances with real configs
+# Real persona instance configs with tokens
 personas/*/persona.json
 
 # Logs
 *.log
-/tmp/
 
 # Python
 __pycache__/
 *.pyc
+*.pyo
 .venv/
+venv/
