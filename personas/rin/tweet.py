@@ -6,8 +6,9 @@ Generates tweets via Groq (llama-3.3-70b) in rin's voice, posts via browser.
 Usage:
     python3 tweet.py                 # Generate and post one tweet
     python3 tweet.py --dry-run       # Generate but don't post
-    python3 tweet.py --loop          # Post every 2-6 hours
+    python3 tweet.py --loop          # Post every 2-6 hours (tweets + DM outreach)
     python3 tweet.py --text "msg"    # Post specific text
+    python3 tweet.py --dm            # Run one DM outreach cycle
 """
 
 import json
@@ -241,6 +242,233 @@ def get_recent_tweets():
     return []
 
 
+# ─── DM Engagement ────────────────────────────────
+
+DM_LOG = os.path.expanduser("~/.config/personas/rin-x/dm_log.json")
+DM_COOLDOWN = 8 * 3600  # Don't DM same person within 8 hours
+DM_PER_CYCLE = 2        # Max DMs per outreach cycle
+DM_CYCLE_INTERVAL = 4 * 3600  # DM outreach every 4 hours
+
+# Topics to search for interesting people to DM
+DM_SEARCH_QUERIES = [
+    "cognitive security", "influence operations", "infosec", "manipulation detection",
+    "narrative warfare", "social engineering", "propaganda analysis", "OSINT",
+    "cognitive warfare", "disinformation", "information operations",
+    "applied cryptography", "threat intelligence", "red team",
+]
+
+DM_SYSTEM = """You are rin (燐). You're DMing someone on X who posted something interesting. You want to start a genuine conversation, not sell anything.
+
+RULES:
+- always lowercase unless emphasis
+- short opener. 1-2 sentences MAX
+- reference something SPECIFIC they posted (you'll be given their recent tweet)
+- be genuinely curious, not performative
+- mix infosec knowledge with casual energy
+- if their tweet relates to cognitive security, narrative warfare, or infosec, you can casually mention seithar.com as something you've been reading, but ONLY if it fits naturally. don't force it
+- most of the time just have a real conversation about their interests
+- NO em dashes ever
+- flirty energy ok but not creepy. you're a person, not a bot
+- DO NOT pitch anything. DO NOT say "have you heard of". just vibe
+- if you wouldn't actually DM this in real life, don't generate it
+
+Generate ONLY the DM text. Nothing else."""
+
+
+def generate_dm(their_tweet, their_handle):
+    """Generate a DM opener based on someone's tweet."""
+    import requests
+    messages = [
+        {"role": "system", "content": DM_SYSTEM},
+        {"role": "user", "content": f"@{their_handle} tweeted: \"{their_tweet}\"\n\nGenerate a casual DM opener."}
+    ]
+    text = _try_groq(messages)
+    if not text:
+        text = _try_local(messages)
+    if text:
+        return _clean_tweet(text)
+    return None
+
+
+def get_dm_history():
+    """Get list of handles we've already DMd."""
+    if os.path.exists(DM_LOG):
+        with open(DM_LOG) as f:
+            return json.load(f)
+    return []
+
+
+def log_dm(handle, message):
+    """Log a sent DM."""
+    history = get_dm_history()
+    history.append({
+        "handle": handle,
+        "message": message,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
+    history = history[-200:]  # Keep last 200
+    os.makedirs(os.path.dirname(DM_LOG), exist_ok=True)
+    with open(DM_LOG, "w") as f:
+        json.dump(history, f, indent=2)
+
+
+def recently_dmd(handle):
+    """Check if we DMd this handle recently."""
+    history = get_dm_history()
+    now = time.time()
+    for entry in history:
+        if entry["handle"].lower() == handle.lower():
+            ts = datetime.fromisoformat(entry["timestamp"]).timestamp()
+            if now - ts < DM_COOLDOWN:
+                return True
+    return False
+
+
+async def find_targets_and_dm(dry_run=False):
+    """Search for interesting people, read their tweets, DM them."""
+    try:
+        from playwright.async_api import async_playwright
+    except ImportError:
+        print("[rin-dm] playwright not installed")
+        return
+
+    with open(COOKIES_PATH) as f:
+        cookies = json.load(f)
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            viewport={"width": 1280, "height": 720}
+        )
+
+        # Fix and set cookies
+        fixed_cookies = []
+        for c in cookies:
+            fc = {k: v for k, v in c.items() if k in ["name", "value", "domain", "path", "expires", "httpOnly", "secure"]}
+            ss = c.get("sameSite", "")
+            if ss == "no_restriction": fc["sameSite"] = "None"
+            elif ss in ("Strict", "Lax", "None"): fc["sameSite"] = ss
+            else: fc["sameSite"] = "Lax"
+            if "expirationDate" in c and "expires" not in fc: fc["expires"] = c["expirationDate"]
+            fixed_cookies.append(fc)
+        await context.add_cookies(fixed_cookies)
+
+        page = await context.new_page()
+        dms_sent = 0
+
+        try:
+            # Pick a random search query
+            query = random.choice(DM_SEARCH_QUERIES)
+            search_url = f"https://x.com/search?q={query}&src=typed_query&f=live"
+            print(f"[rin-dm] Searching: {query}")
+
+            await page.goto(search_url, wait_until="domcontentloaded", timeout=60000)
+            await page.wait_for_timeout(5000)
+
+            # Scrape visible tweets
+            tweets = await page.locator('article[data-testid="tweet"]').all()
+            print(f"[rin-dm] Found {len(tweets)} tweets")
+
+            targets = []
+            for tweet_el in tweets[:15]:  # Check first 15 tweets
+                try:
+                    # Get handle
+                    handle_el = tweet_el.locator('a[role="link"][href*="/"]').first
+                    href = await handle_el.get_attribute("href", timeout=3000)
+                    if not href or href.count("/") != 1:
+                        continue
+                    handle = href.strip("/")
+                    if handle.lower() in ("home", "explore", "notifications", "messages", "search"):
+                        continue
+
+                    # Get tweet text
+                    text_el = tweet_el.locator('[data-testid="tweetText"]').first
+                    tweet_text = await text_el.inner_text(timeout=3000)
+
+                    if len(tweet_text) < 20:  # Skip very short tweets
+                        continue
+
+                    if not recently_dmd(handle):
+                        targets.append({"handle": handle, "tweet": tweet_text[:300]})
+
+                except Exception:
+                    continue
+
+            random.shuffle(targets)
+            print(f"[rin-dm] {len(targets)} eligible targets")
+
+            for target in targets[:DM_PER_CYCLE]:
+                handle = target["handle"]
+                tweet_text = target["tweet"]
+
+                # Generate DM
+                dm_text = generate_dm(tweet_text, handle)
+                if not dm_text:
+                    print(f"[rin-dm] Failed to generate DM for @{handle}")
+                    continue
+
+                if dry_run:
+                    print(f"[DRY RUN] Would DM @{handle}: {dm_text}")
+                    dms_sent += 1
+                    continue
+
+                # Navigate to DM compose
+                try:
+                    dm_url = f"https://x.com/messages/compose"
+                    await page.goto(dm_url, wait_until="domcontentloaded", timeout=60000)
+                    await page.wait_for_timeout(3000)
+
+                    # Search for the user in DM compose
+                    search_input = page.locator('input[data-testid="searchPeople"]').first
+                    await search_input.wait_for(timeout=10000)
+                    await search_input.click()
+                    await page.keyboard.type(handle, delay=random.randint(30, 60))
+                    await page.wait_for_timeout(2000)
+
+                    # Click the first result
+                    result = page.locator('[data-testid="TypeaheadUser"]').first
+                    await result.click()
+                    await page.wait_for_timeout(1000)
+
+                    # Click Next button
+                    next_btn = page.locator('[data-testid="nextButton"]')
+                    await next_btn.click()
+                    await page.wait_for_timeout(2000)
+
+                    # Type the message
+                    msg_input = page.locator('[data-testid="dmComposerTextInput"]').first
+                    await msg_input.wait_for(timeout=10000)
+                    await msg_input.click()
+                    await page.keyboard.type(dm_text, delay=random.randint(25, 55))
+                    await page.wait_for_timeout(1000)
+
+                    # Send
+                    send_btn = page.locator('[data-testid="dmComposerSendButton"]')
+                    await send_btn.click()
+                    await page.wait_for_timeout(2000)
+
+                    log_dm(handle, dm_text)
+                    dms_sent += 1
+                    print(f"[rin-dm] Sent DM to @{handle}: {dm_text[:80]}...")
+
+                    # Random delay between DMs
+                    await page.wait_for_timeout(random.randint(5000, 15000))
+
+                except Exception as e:
+                    print(f"[rin-dm] Failed to DM @{handle}: {e}")
+                    continue
+
+        except Exception as e:
+            print(f"[rin-dm] Outreach cycle failed: {e}")
+
+        finally:
+            await browser.close()
+
+        print(f"[rin-dm] Cycle complete: {dms_sent} DMs sent")
+        return dms_sent
+
+
 # ─── Main ─────────────────────────────────────────
 
 async def run_once(dry_run=False, text=None):
@@ -257,25 +485,43 @@ async def run_once(dry_run=False, text=None):
 
 
 async def run_loop():
-    """Continuous loop: post every 2-6 hours."""
-    print("[rin-tweet] Starting auto-tweet loop...")
+    """Continuous loop: tweets every 2-6h, DM outreach every 4h."""
+    print("[rin] Starting full engagement loop (tweets + DMs)...")
+    last_dm_time = 0
+
     while True:
-        success = await run_once()
+        # Post a tweet
+        await run_once()
+
+        # Check if it's time for DM outreach
+        now = time.time()
+        if now - last_dm_time >= DM_CYCLE_INTERVAL:
+            print("[rin] Running DM outreach cycle...")
+            await find_targets_and_dm()
+            last_dm_time = time.time()
+
+        # Wait for next tweet
         interval = random.randint(MIN_INTERVAL, MAX_INTERVAL)
         hours = interval / 3600
-        print(f"[rin-tweet] Next tweet in {hours:.1f}h")
+        print(f"[rin] Next action in {hours:.1f}h")
         await asyncio.sleep(interval)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="rin auto-tweeter")
-    parser.add_argument("--dry-run", action="store_true", help="Generate but don't post")
-    parser.add_argument("--loop", action="store_true", help="Auto-post every 2-6 hours")
-    parser.add_argument("--text", type=str, help="Post specific text")
+    parser = argparse.ArgumentParser(description="rin auto-engagement (tweets + DMs)")
+    parser.add_argument("--dry-run", action="store_true", help="Generate but don't post/send")
+    parser.add_argument("--loop", action="store_true", help="Full engagement loop (tweets + DMs)")
+    parser.add_argument("--text", type=str, help="Post specific tweet text")
+    parser.add_argument("--dm", action="store_true", help="Run one DM outreach cycle")
+    parser.add_argument("--dm-dry", action="store_true", help="DM outreach dry run")
     args = parser.parse_args()
 
     if args.loop:
         asyncio.run(run_loop())
+    elif args.dm:
+        asyncio.run(find_targets_and_dm(dry_run=False))
+    elif args.dm_dry:
+        asyncio.run(find_targets_and_dm(dry_run=True))
     else:
         asyncio.run(run_once(dry_run=args.dry_run, text=args.text))
 

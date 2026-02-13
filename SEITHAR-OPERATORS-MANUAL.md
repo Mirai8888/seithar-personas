@@ -566,17 +566,34 @@ python3 tweet.py --text "your tweet text here"
 # Start auto-posting loop (every 2-6 hours)
 python3 tweet.py --loop
 
-# Background the loop
+# Background the full engagement loop (tweets + DMs)
 nohup python3 tweet.py --loop > /tmp/rin-tweet.log 2>&1 &
+
+# Run just one DM outreach cycle
+python3 tweet.py --dm
+
+# DM outreach dry run (preview who would be DMd)
+python3 tweet.py --dm-dry
 ```
 
 ## How It Works
+**Tweeting:**
 1. Generates tweet via Groq (llama-3.3-70b) or local vLLM
 2. Opens headless Chromium with rin's X cookies
 3. Navigates to x.com/compose/post
 4. Types tweet with human-like delays
 5. Clicks post button
 6. Logs to `~/.config/personas/rin-x/tweet_log.json`
+
+**DM Outreach:**
+1. Picks a random search query (cognitive security, infosec, influence ops, etc.)
+2. Searches X for recent tweets matching query
+3. Scrapes handles + tweet text from results
+4. Filters out already-DMd handles (8hr cooldown)
+5. Generates personalized DM opener via LLM referencing their specific tweet
+6. Navigates to DM compose, searches user, types message, sends
+7. Logs to `~/.config/personas/rin-x/dm_log.json`
+8. Max 2 DMs per cycle, cycles every 4 hours
 
 ## Cookie Location
 `~/.config/personas/rin-x/cookies.json` (21 cookies, x.com domain)
