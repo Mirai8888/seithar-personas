@@ -3,6 +3,10 @@
 
 ## PENDING
 
+### 2026-02-13 Session 4
+- [ ] **Verify arXiv email**: Click link in email from e-prints@arxiv.org "Welcome Mirai Junsei" to verify the account. Then we can submit the Sunyata Protocol preprint.
+- [ ] **Run FLESHENGINE schema update in Supabase SQL Editor**: Paste contents of `~/fleshengine/schema_update_vuln.sql` — adds `vuln_composite` and `vuln_top_vectors` columns to targets table. Without this, vulnerability scores won't persist to DB.
+
 ### GitHub Pages (since 2026-02-11)
 - Visit `github.com/Mirai8888/seithar-research/settings/pages` → set source to `gh-pages` branch
 - This enables the network visualizations and community map at mirai8888.github.io
