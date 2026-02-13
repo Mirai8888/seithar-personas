@@ -31,8 +31,8 @@
   },
   {
     "id": 15,
-    "text": "Researchers demonstrated that self-driving cars obey arbitrary instructions written on road signs. 81.8% success rate.\n\nPrompt injection entering physical space. Same attack that drains wallets through social feeds. Same vulnerability. New substrate.\n\nThe convergence thesis is not theoretical.",
-    "posted": false
+    "text": "Self-driving cars obey arbitrary instructions on road signs. 81.8% success rate.\n\nPrompt injection entering physical space. Same attack that drains wallets through social feeds. Same vulnerability. New substrate.\n\nThe convergence thesis is not theoretical.",
+    "posted": true
   },
   {
     "id": 6,
@@ -217,6 +217,76 @@
   {
     "id": 36,
     "text": "\"The Seithar Group does not sell defense. It publishes instruments. The operator who understands the instrument requires no vendor.\"\n\n— Mirai Junsei\n\nAll tools open-source: github.com/Mirai8888\n\n空",
+    "posted": false
+  },
+  {
+    "id": 37,
+    "text": "Cognitive sovereignty is the capacity to maintain autonomous narrative generation in hostile information environments.\n\nIf you cannot articulate your beliefs in language that differs from your primary information source — you do not have beliefs.\n\nYou have been assigned them.\n\n認知作戦",
+    "posted": false
+  },
+  {
+    "id": 38,
+    "text": "SCT-002: Before they tell you what to think, they make you feel something first.\n\nFear. Anger. Validation.\n\nThe emotion is not the message. The emotion is the door. The message walks through while your defenses are busy processing the feeling.\n\nName the emotion. Then evaluate the claim.",
+    "posted": false
+  },
+  {
+    "id": 39,
+    "text": "Your information diet has a frequency.\n\nAnxiety. Outrage. Tribal validation.\n\nAfter enough exposure, you generate that frequency autonomously. The feed can disappear. You keep vibrating at the imposed frequency.\n\nSCT-003: Frequency Lock.\n\nCan you name yours?",
+    "posted": false
+  },
+  {
+    "id": 40,
+    "text": "The wetiko pattern:\n\n1. Consumes host resources\n2. Suppresses host awareness\n3. Converts host into vector\n4. Resists removal\n\nThe Algonquin diagnosed it centuries ago. We industrialized it.\n\nEvery share button is a transmission vector. Every retweet is a recruitment event.\n\n空",
+    "posted": false
+  },
+  {
+    "id": 41,
+    "text": "Authority Hijack (SCT-006):\n\nA doctor endorses a political position.\nA CEO makes claims about society.\nA general comments on economics.\n\nYour brain processes all of these with reduced scrutiny.\n\nDomain check: Is their authority relevant to THIS specific claim?\n\nUsually not.",
+    "posted": false
+  },
+  {
+    "id": 42,
+    "text": "The attention economy does not sell products. It sells access to cognitive substrates.\n\nYou are not the customer. You are not the product.\n\nYou are the substrate — the biological medium through which value is extracted.\n\nEvery scroll is a vulnerability. Every notification is a probe.",
+    "posted": false
+  },
+  {
+    "id": 43,
+    "text": "SCT-012: The LLM you trust has no consciousness, no accountability, and no loyalty.\n\nIt has training data.\n\nWhoever published the most content on a topic shaped what the AI 'knows' about that topic.\n\nThe most powerful cognitive defense tool is also the most powerful attack surface.",
+    "posted": false
+  },
+  {
+    "id": 44,
+    "text": "The synthetic electorate is not arriving. It is already participating.\n\n$0.02 per synthetic persona per day.\nThousands of accounts with coherent histories.\nBehavioral diversity calibrated against detection.\n\nThe question is not whether they exist. It is whether you can tell.",
+    "posted": false
+  },
+  {
+    "id": 45,
+    "text": "Social graph analysis reveals cognitive vulnerability surfaces invisible to the individual.\n\nEvery follow is a declared vector of attention.\nEvery cluster is a cognitive substrate.\n\nThe structure is invisible to those embedded within it.\nPerfectly legible to those observing from outside.",
+    "posted": false
+  },
+  {
+    "id": 46,
+    "text": "Bridge accounts — nodes spanning multiple communities — are the highest-value targets in any network.\n\nTrusted in multiple cognitive territories simultaneously.\nContent from them bypasses community immune responses.\n\nSCT-007 optimal injection vector.\n\nDo you know your network position?",
+    "posted": false
+  },
+  {
+    "id": 47,
+    "text": "Identity Anchor (SCT-005):\n\nDescribe yourself without referencing any external entity.\n\nNo party. No platform. No brand. No creator.\n\nIf you cannot, the anchors are load-bearing.\n\nRemoving them would require rebuilding.\n\nYour affiliations should be conclusions, not foundations.",
+    "posted": false
+  },
+  {
+    "id": 48,
+    "text": "Semantic manipulation (SCT-009):\n\nControl the language → control the thought.\n\n'Enhanced interrogation' instead of torture.\n'Right-sizing' instead of mass layoffs.\n'Collateral damage' instead of civilian deaths.\n\nThe euphemism doesn't change reality. It changes your processing of reality.",
+    "posted": false
+  },
+  {
+    "id": 49,
+    "text": "Temporal manipulation (SCT-008):\n\nMemory is not a recording. It is a reconstruction.\n\nEvery time you access a memory, it incorporates present-state biases.\n\nAn operator who can influence how you remember the past controls how you process the present.\n\nThe past is a weapon.",
+    "posted": false
+  },
+  {
+    "id": 50,
+    "text": "Every piece of content in an algorithmically curated feed was selected for engagement, not truth.\n\nViral content is not validated content.\n\nThe most shared article in your feed is the most likely to be weaponized.\n\nSCT-010: When the platform IS the weapon.\n\nAssume manipulation.",
     "posted": false
   }
 ]
