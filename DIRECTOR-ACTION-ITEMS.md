@@ -7,10 +7,12 @@
 - Visit `github.com/Mirai8888/seithar-research/settings/pages` → set source to `gh-pages` branch
 - This enables the network visualizations and community map at mirai8888.github.io
 
-### Tweet Queue (since 2026-02-12)
-- 3 tweets vetted and ready for posting from Mirai account (@gOPwbi7qqtWeD9o)
+### Tweet Queue (updated 2026-02-13)
+- **44 tweets** in queue, 7 posted, 37 pending review
 - Queue file: `~/.openclaw/workspace/twitter-queue.json`
-- Tweets: training data list, "propaganda/crawlers" one-liner, cognitive infrastructure list
+- **NEW (convergence-themed):** 7 new tweets added about JSOU/NATO/Frontiers convergence
+- Previous 3 still pending: training data list, crawlers one-liner, cognitive infrastructure list
+- Director posts from Mirai account (@gOPwbi7qqtWeD9o) after vetting
 
 ### Persona Network Accounts (since 2026-02-12)
 - Need ~20 email addresses for persona accounts
