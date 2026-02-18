@@ -8,7 +8,7 @@ Usage:
     python3 engine.py --config /path/to/persona.json
 
 Each persona needs:
-    ~/.openclaw/workspace/personas/<name>/persona.json
+    personas/<name>/persona.json (or set PERSONAS_DIR / use ~/.openclaw/workspace/personas)
 """
 
 import discord
@@ -26,7 +26,7 @@ from datetime import datetime
 # ─── Globals ──────────────────────────────────────
 
 GROQ_CREDS = os.path.expanduser("~/.config/fleshengine/credentials.json")
-PERSONAS_DIR = os.path.expanduser("~/.openclaw/workspace/personas")
+PERSONAS_DIR = os.environ.get("PERSONAS_DIR") or os.path.expanduser("~/.openclaw/workspace/personas")
 GUILD_ID = 1444739404576067647
 
 with open(GROQ_CREDS) as f:
@@ -35,38 +35,8 @@ with open(GROQ_CREDS) as f:
 
 # ─── Persona Config Schema ───────────────────────
 #
-# persona.json:
-# {
-#   "name": "rin",
-#   "token_file": "~/.config/personas/egirl-01.json",
-#   "token_key": "token",
-#
-#   "channels": {
-#     "active": ["residue"],          # respond here
-#     "lurk": ["directives"],         # react only
-#     "ignore": []                    # skip entirely
-#   },
-#
-#   "behavior": {
-#     "react_probability": 0.12,
-#     "unprompted_probability": 0.03,
-#     "cooldown_seconds": 120,
-#     "min_delay": 2.0,
-#     "max_delay": 6.0,
-#     "min_typing": 1.5,
-#     "max_typing": 5.0,
-#     "max_response_length": 150,
-#     "reply_probability": 0.6,
-#     "reactions": ["🫧", "✨", "🖤", "💿"],
-#     "interest_keywords": ["seithar", "crypto", "infosec"]
-#   },
-#
-#   "voice": {
-#     "system_prompt": "You are rin...",
-#     "model": "llama-3.3-70b-versatile",
-#     "temperature": 0.9
-#   }
-# }
+# persona.json: name, token_file, token_key, channels or guilds, behavior, voice
+# See TEMPLATE.json. Supports "guilds": { "guild_id": { "active": [], "lurk": [], "ignore": [] }, "*": {...} }
 
 
 def load_persona(name=None, config_path=None):
@@ -98,8 +68,7 @@ def load_persona(name=None, config_path=None):
 def _try_ollama_native(config, messages):
     """Ollama native /api/chat (works when /v1/chat/completions returns 404)."""
     model = os.environ.get("PERSONA_LOCAL_MODEL", "mistral")
-    host = os.environ.get("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
-    url = f"{host}/api/chat"
+    url = "http://localhost:11434/api/chat"
     max_tokens = config["behavior"].get("max_response_length", 150)
     timeout = int(os.environ.get("PERSONA_LOCAL_TIMEOUT", "60"))
     try:
@@ -124,7 +93,7 @@ def _try_ollama_native(config, messages):
         print(f"[{config['name']}] ollama /api/chat timeout ({timeout}s)", flush=True)
         return None
     except requests.exceptions.ConnectionError:
-        print(f"[{config['name']}] ollama connection refused. Run: ollama serve && ollama pull mistral", flush=True)
+        print(f"[{config['name']}] ollama connection failed (is 'ollama serve' running?)", flush=True)
         return None
     except Exception as e:
         print(f"[{config['name']}] ollama /api/chat failed: {e}", flush=True)
@@ -133,11 +102,9 @@ def _try_ollama_native(config, messages):
 
 def _try_local(config, messages):
     """Try local Ollama (native API) then vLLM (OpenAI-compatible)."""
-    # Ollama native API first (always works; /v1/chat/completions can 404 on some versions)
     text = _try_ollama_native(config, messages)
     if text:
         return text
-    # vLLM OpenAI-compatible
     url = "http://localhost:8000/v1/chat/completions"
     max_tokens = config["behavior"].get("max_response_length", 150)
     temperature = config["voice"].get("temperature", 0.9)
@@ -166,7 +133,7 @@ def _try_local(config, messages):
 
 
 def generate_response(config, context_messages, user_message, user_name):
-    """Generate persona response via Groq or local Ollama/vLLM."""
+    """Generate persona response via Groq or local Ollama/vLLM. Groq first, local fallback."""
     voice = config["voice"]
     messages = [{"role": "system", "content": voice["system_prompt"]}]
 
@@ -179,7 +146,6 @@ def generate_response(config, context_messages, user_message, user_name):
 
     messages.append({"role": "user", "content": f"[{user_name}]: {user_message}"})
 
-    # Groq first, local (Ollama/vLLM) as fallback
     local_only = os.environ.get("PERSONA_LOCAL_ONLY", "").strip().lower() in ("1", "true", "yes")
     text = None
     if not local_only:
@@ -200,23 +166,16 @@ def generate_response(config, context_messages, user_message, user_name):
                 timeout=15
             )
             if r.status_code == 200:
-                data = r.json()
-                text = (data.get("choices") or [{}])[0].get("message", {}).get("content", "")
-                if text:
-                    text = text.strip()
+                text = r.json()["choices"][0]["message"]["content"].strip()
             else:
-                print(f"[{config['name']}] groq error: {r.status_code} (will try local)", flush=True)
+                print(f"[{config['name']}] groq error: {r.status_code} {r.text[:200]}", flush=True)
         except Exception as e:
-            print(f"[{config['name']}] groq failed: {e} (will try local)", flush=True)
+            print(f"[{config['name']}] groq failed: {e}", flush=True)
     if not text:
-        print(f"[{config['name']}] trying local (Ollama/vLLM)...", flush=True)
         text = _try_local(config, messages)
-        if not text:
-            print(f"[{config['name']}] local failed. Run: ollama serve && ollama pull mistral", flush=True)
 
     if not text:
         return None
-    # Strip roleplay markers
     name = config["name"]
     for prefix in [f"{name}:", f"{name} :", f"**{name}**:", f"[{name}]:"]:
         if text.lower().startswith(prefix.lower()):
@@ -231,7 +190,6 @@ class PersonaBot(discord.Client):
         self.config = config
         self.name = config["name"]
         self.behavior = config["behavior"]
-        # Support both old "channels" format and new "guilds" format
         if "guilds" in config:
             self.guilds_config = config["guilds"]
             self.channels = None
@@ -242,10 +200,8 @@ class PersonaBot(discord.Client):
         self.channel_history = {}
 
     def _get_channel_config(self, guild_id, channel_name):
-        """Get channel role (active/lurk/ignore/unknown) for a given guild+channel."""
         if self.guilds_config:
             gid = str(guild_id)
-            # Check specific guild first, then wildcard
             guild_cfg = self.guilds_config.get(gid, self.guilds_config.get("*", None))
             if guild_cfg is None:
                 return "unknown"
@@ -255,15 +211,10 @@ class PersonaBot(discord.Client):
                 return "lurk"
             if channel_name in guild_cfg.get("active", []):
                 return "active"
-            # Wildcard guild: unlisted channels default to active
-            # (she should participate in any server she's added to)
-            # Specific guild: unlisted channels default to lurk
             if gid not in self.guilds_config:
-                # Using wildcard config, unlisted channel = active
                 return "active"
             return "lurk"
         else:
-            # Legacy single-guild format
             if channel_name in self.channels.get("ignore", []):
                 return "ignore"
             if channel_name in self.channels.get("lurk", []):
@@ -276,10 +227,7 @@ class PersonaBot(discord.Client):
         guilds = [g.name for g in self.guilds]
         print(f"[{self.name}] online as {self.user} ({self.user.id})", flush=True)
         print(f"[{self.name}] in {len(guilds)} servers: {', '.join(guilds)}", flush=True)
-
         print(f"[{self.name}] listening for messages...", flush=True)
-
-        # Auto-join servers from invite list
         invites = self.config.get("invites", [])
         for invite_url in invites:
             code = invite_url.split("/")[-1]
@@ -287,12 +235,10 @@ class PersonaBot(discord.Client):
             try:
                 import requests as req
                 headers = {"Authorization": self.config["_token"], "User-Agent": "Mozilla/5.0"}
-                # Check invite info first
                 info = req.get(f"https://discord.com/api/v10/invites/{code}", headers=headers).json()
                 guild_id = info.get("guild", {}).get("id", "")
                 if guild_id in guild_ids:
-                    continue  # already in this server
-                # Try to join
+                    continue
                 r = req.post(f"https://discord.com/api/v10/invites/{code}", headers=headers, json={})
                 if r.status_code == 200:
                     print(f"[{self.name}] joined {info.get('guild',{}).get('name','unknown')} via invite", flush=True)
@@ -302,45 +248,31 @@ class PersonaBot(discord.Client):
                 print(f"[{self.name}] invite join error: {e}", flush=True)
 
     async def on_message(self, message):
-        # Track own messages
         if message.author == self.user:
             self._track(message, is_self=True)
             return
-
-        # Only guild messages
         if not message.guild:
             return
-
-        # Legacy: skip non-target guild if using old format
         if self.channels and message.guild.id != GUILD_ID:
             return
 
         ch = message.channel.name
         self._track(message, is_self=False)
-
         role = self._get_channel_config(message.guild.id, ch)
 
-        # Ignore
         if role == "ignore" or role == "unknown":
             return
-
-        # Lurk: react only
         if role == "lurk":
             if random.random() < self.behavior.get("react_probability", 0.1):
                 await self._react(message)
             return
 
-        # Active channel
-
-        # Maybe react (independent of responding)
         if random.random() < self.behavior.get("react_probability", 0.1):
             await self._react(message)
 
-        # Should we respond?
         if not self._should_respond(message):
             return
 
-        # Cooldown (skip if directly mentioned)
         now = time.time()
         directly_addressed = (
             self.user.mentioned_in(message) or
@@ -351,7 +283,6 @@ class PersonaBot(discord.Client):
             if now - self.last_response_time < cd:
                 return
 
-        # Generate
         print(f"[{self.name}] #{ch}: generating reply...", flush=True)
         ctx = self.channel_history.get(message.channel.id, [])
         response = generate_response(
@@ -362,7 +293,6 @@ class PersonaBot(discord.Client):
             print(f"[{self.name}] #{ch}: no response (LLM returned empty or failed)", flush=True)
             return
 
-        # Human delays
         delay = random.uniform(
             self.behavior.get("min_delay", 2.0),
             self.behavior.get("max_delay", 6.0)
@@ -400,55 +330,37 @@ class PersonaBot(discord.Client):
             self.last_response_time = time.time()
             self._track_raw(message.channel.id, response)
             print(f"[{self.name}] #{ch}: {response[:80]}", flush=True)
-        except discord.Forbidden as e:
-            print(f"[{self.name}] send 403: no permission in #{ch} (Missing Permissions)", flush=True)
         except Exception as e:
             print(f"[{self.name}] send error: {e}", flush=True)
 
     def _should_respond(self, message):
         content = message.content.lower()
-
-        # Direct mention - always respond
         if self.user.mentioned_in(message):
             return True
-
-        # Name mentioned
         if self.name.lower() in content.split():
             return True
-
-        # Reply to rin's message - always respond
         if message.reference and message.reference.resolved:
             if hasattr(message.reference.resolved, 'author'):
                 if message.reference.resolved.author == self.user:
                     return True
-
-        # Interest keywords
         keywords = self.behavior.get("interest_keywords", [])
         if any(kw in content for kw in keywords):
             prob = self.behavior.get("unprompted_probability", 0.03) * 3
             if random.random() < prob:
                 return True
-
-        # Higher engagement in external servers (not home guild)
         is_home = message.guild and message.guild.id == GUILD_ID
         base_prob = self.behavior.get("unprompted_probability", 0.03)
         if not is_home:
-            base_prob *= 2.5  # more active in external servers to build presence
-
-        # Respond to questions more often
+            base_prob *= 2.5
         if "?" in content:
             base_prob *= 2
-
-        # Respond in active conversations (multiple recent messages)
         ctx = self.channel_history.get(message.channel.id, [])
         if len(ctx) >= 5:
             recent = [m for m in ctx[-5:] if time.time() - m["timestamp"] < 120]
             if len(recent) >= 3:
-                base_prob *= 1.5  # active conversation boost
-
+                base_prob *= 1.5
         if random.random() < base_prob:
             return True
-
         return False
 
     async def _react(self, message):

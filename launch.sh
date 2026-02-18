@@ -4,6 +4,7 @@
 #   ./launch.sh rin              # launch rin only
 #   ./launch.sh all              # launch all personas
 #   ./launch.sh stop             # stop all personas
+#   ./launch.sh stopone rin      # stop one persona
 #   ./launch.sh status           # check who's running
 
 ENGINE="$(dirname "$0")/engine.py"
@@ -29,10 +30,8 @@ case "${1:-status}" in
         for dir in "$PERSONAS_DIR"/*/; do
             name=$(basename "$dir")
             if [ -f "$dir/persona.json" ]; then
-                # Kill existing
                 pkill -f "engine.py --persona $name" 2>/dev/null
                 sleep 0.5
-                # Launch
                 nohup python3 "$ENGINE" --persona "$name" > "$LOG_DIR/$name.log" 2>&1 &
                 echo "[$name] launched (PID: $!)"
             fi
