@@ -656,7 +656,7 @@ Body: { "access_token": TOKEN, "title": "...", "content": [{"tag":"p","children"
 ```
 Credentials: ~/.config/email/credentials.json
 Email: seithargroup@gmail.com
-App Password: REDACTED
+App Password: [REDACTED]
 IMAP: imap.gmail.com:993
 SMTP: smtp.gmail.com:587
 ```

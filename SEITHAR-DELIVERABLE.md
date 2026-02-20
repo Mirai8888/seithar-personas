@@ -330,7 +330,7 @@ These work through the OpenClaw agent (研修生) via Discord or direct chat:
 **Gmail (SMTP/IMAP):**
 ```
 Email: seithargroup@gmail.com
-App Password: REDACTED
+App Password: [REDACTED]
 IMAP: imap.gmail.com:993
 SMTP: smtp.gmail.com:587
 ```
