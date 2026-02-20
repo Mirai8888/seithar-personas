@@ -1,0 +1,9 @@
+ops/
+MEMORY.md
+USER.md
+memory/
+ops/
+*.json
+HEARTBEAT.md
+BOOTSTRAP.md
+IDENTITY.md
